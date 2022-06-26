@@ -1,0 +1,103 @@
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y,test_size = 0.3, random_state=1)
+
+# build a linear regression model
+from sklearn.linear_model import LinearRegression
+linreg = LinearRegression()
+linreg.fit(X_train, y_train)
+LinearRegression(copy_X=True, fit_intercept=True, n_jobs=None, normalize=False)
+print ("iNTERCEPT : ",linreg.intercept_)
+print ("CO-EFFICIENT : ",linreg.coef_)
+
+y_pred = linreg.predict(X_test)
+# calculate R^2 value, MAE, MSE, RMSE
+
+from sklearn.metrics import r2_score
+from sklearn import metrics
+print("R-Square Value",r2_score(y_test,y_pred))
+print("\n")
+print ("mean_absolute_error :",metrics.mean_absolute_error(y_test, y_pred))
+print("\n")
+print ("mean_squared_error : ",metrics.mean_squared_error(y_test, y_pred))
+print("\n")
+print ("root_mean_squared_error : ",np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+==============================================================================================
+X = dataframe.drop("Class", axis =1).values
+y = dataframe["Class"].values
+==============================================================================================
+# Splitting the attributes into independent and dependent attributes
+X = dataframe.iloc[:,dataframe.columns != 'Class']
+y = dataframe.Class
+===============================================================================================
+from sklearn.preprocessing import StandardScaler
+X = dataframe.drop("Class", axis =1).values
+y = dataframe["Class"].values
+
+# Standardizing the features
+x = StandardScaler().fit_transform(X)
+
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2)
+principalComponents = pca.fit_transform(x)
+principalDf = pd.DataFrame(data = principalComponents
+             , columns = ['principal component 1', 'principal component 2'])
+
+finalDf = pd.concat([principalDf, dataframe[['Class']]], axis = 1)
+print(finalDf)
+
+fig = plt.figure(figsize = (8,8))
+ax = fig.add_subplot(1,1,1) 
+ax.set_xlabel('Principal Component 1', fontsize = 15)
+ax.set_ylabel('Principal Component 2', fontsize = 15)
+ax.set_title('2 component PCA', fontsize = 20)
+targets = [1,2,3]
+colors = ['r', 'g', 'b']
+for target, color in zip(targets,colors):
+    indicesToKeep = finalDf['Class'] == target
+    ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
+               , finalDf.loc[indicesToKeep, 'principal component 2']
+               , c = color
+               , s = 50)
+ax.legend(targets)
+ax.grid()
+================================================================================================================================
+from sklearn import tree
+from sklearn.metrics import accuracy_score
+###########################################################################
+# Model fit and performance evaluation for various tree depth from 2-50
+###########################################################################
+
+maxdepths = [2,3,4,5,6,7,8,9,10,15,20,25,30,35,40,45,50]
+
+trainAccuracy = np.zeros(len(maxdepths))
+testAccuracy = np.zeros(len(maxdepths))
+
+index = 0
+for depth in maxdepths:
+    clf = tree.DecisionTreeClassifier(max_depth=depth)
+    clf = clf.fit(X_train_pca, y_train)
+    Y_predTrain = clf.predict(X_train_pca)
+    Y_predTest = clf.predict(X_test_pca)
+    trainAccuracy[index] = accuracy_score(y_train, Y_predTrain)
+    testAccuracy[index] = accuracy_score(y_test, Y_predTest)
+    index += 1
+    
+###########################################################################
+# Plot training and test accuracies
+##########################################################################
+    
+plt.plot(maxdepths,trainAccuracy,'ro-',maxdepths,testAccuracy,'bv--')
+plt.legend(['Training Accuracy','Test Accuracy'])
+plt.xlabel('Max depth')
+plt.ylabel('Accuracy')
+===========================================================================================================================
+from sklearn.ensemble import ExtraTreesClassifier
+import matplotlib.pyplot as plt
+model = ExtraTreesClassifier()
+model.fit(X,y)
+print(model.feature_importances_) #use inbuilt class feature_importances of tree based classifiers
+
+#plot graph of feature importances for better visualization
+feat_importances = pd.Series(model.feature_importances_, index=X.columns)
+feat_importances.nlargest(10).plot(kind='barh')
+plt.show()

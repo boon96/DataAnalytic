@@ -1,0 +1,81 @@
+# Splitting the attributes into independent and dependent attributes
+new_X = dataframe.iloc[:,dataframe.columns != 'Class']
+y = dataframe.Class
+
+# Feature Scaling
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+X_scaled = sc.fit_transform(new_X)
+
+# Apply PCA
+from sklearn.decomposition import PCA
+pca = PCA(n_components=None)
+pca.fit(X_scaled)
+
+# Get the eigenvalues
+print("Eigenvalues:")
+print(pca.explained_variance_)
+print()
+
+# Get explained variances
+print("Variances (Percentage):")
+print(pca.explained_variance_ratio_ * 100)
+print()
+
+# Make the scree plot
+plt.plot(np.cumsum(pca.explained_variance_ratio_ * 100))
+plt.xlabel("Number of components (Dimensions)")
+plt.ylabel("Explained variance (%)")
+=============================================================================================================================
+# Do feature scaling
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+X_scaled = sc.fit_transform(new_X)
+
+# Apply PCA
+from sklearn.decomposition import PCA
+pca = PCA(n_components=0.95)
+X_pca = pca.fit_transform(X_scaled)
+
+# Get the transformed dataset
+X_pca = pd.DataFrame(X_pca)
+print(X_pca.head())
+print("\nSize: ")
+print(X_pca.shape)
+=============================================================================================================================
+fig = plt.figure(figsize=(10, 8))
+sns.heatmap(X_pca.corr(),annot=True)
+=========================================
+# Make train and test sets
+from sklearn.model_selection import train_test_split
+X_train_pca, X_test_pca, y_train, y_test = train_test_split(new_X, y, test_size=0.20, 
+                                                             random_state=42)
+
+# Initialize the logistic regression model
+from sklearn.linear_model import LogisticRegression
+clf = LogisticRegression(max_iter=2500)
+
+# Train the model
+clf.fit(X_train_pca, y_train)
+
+# Make predictions
+y_pred = clf.predict(X_test_pca) # Predictions
+y_true = y_test # True values
+
+# Measure accuracy
+from sklearn.metrics import accuracy_score
+import numpy as np
+print("Train accuracy:", np.round(accuracy_score(y_train, 
+                                                 clf.predict(X_train_pca)), 2))
+print("Test accuracy:", np.round(accuracy_score(y_true, y_pred), 2))
+
+# Make the confusion matrix
+from sklearn.metrics import confusion_matrix
+cf_matrix = confusion_matrix(y_true, y_pred)
+print("\nTest confusion_matrix")
+sns.heatmap(cf_matrix, annot=True, cmap='Blues')
+plt.xlabel('Predicted', fontsize=12)
+plt.ylabel('True', fontsize=12)
+================================================================
+
+
